@@ -1,4 +1,21 @@
 __pycache__/
 .ipynb_checkpoints
+
+# BMAD Method & Tooling
 .bmad-core/
 .gemini/
+.kiro/
+docs/
+web-bundles/
+
+# Local files
+*.db
+*.log
+
+# Models
+*.pkl
+models/
+
+# IDE & Test configs
+.vscode/
+pytest.ini
