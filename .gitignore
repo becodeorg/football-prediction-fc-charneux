@@ -19,3 +19,6 @@ models/
 # IDE & Test configs
 .vscode/
 pytest.ini
+
+# Virtual env folder
+venv
