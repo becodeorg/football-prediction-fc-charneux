@@ -4,3 +4,6 @@ jupyter
 requests 
 beautifulsoup4 
 streamlit 
+h2o
+seaborn
+matplotlib
