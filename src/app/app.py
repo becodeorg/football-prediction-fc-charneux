@@ -1,16 +1,23 @@
-import streamlit as st
-# Import prediction function: from src.modeling.model import predict_outcome
+import dash
+from dash import Dash, dcc, html
+import dash_bootstrap_components as dbc
 
-st.title("Football Match Predictor")
+app = Dash(__name__, use_pages=True, external_stylesheets=[dbc.themes.BOOTSTRAP])
+server = app.server  # for deployment
 
-st.header("Upcoming Matches & Predictions")
-# Placeholder for displaying upcoming matches and predictions
-st.write("No upcoming matches to display yet.")
+app.layout = dbc.Container([
+    dbc.NavbarSimple(
+        brand="FC Charneux - CheatGPT",
+        color="primary",
+        dark=True,
+        children=[
+            dbc.NavItem(dcc.Link("Home", href="/", className="nav-link")),
+            dbc.NavItem(dcc.Link("Prediction", href="/prediction", className="nav-link")),
+            dbc.NavItem(dcc.Link("Stats", href="/stats", className="nav-link")),
+        ]
+    ),
+    dash.page_container
+], fluid=True)
 
-st.header("Team Statistics & Odds")
-# Placeholder for displaying team stats and odds
-st.write("No team statistics or odds to display yet.")
-
-# Example of calling a prediction (will be integrated later)
-# if st.button("Get a dummy prediction"):
-#     st.write(f"Dummy prediction: {predict_outcome(None)}")
+if __name__ == '__main__':
+    app.run(debug=True)

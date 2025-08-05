@@ -1,0 +1,8 @@
+/* Custom styles for Football Insights App */
+
+/* Remove padding from container-fluid */
+.container-fluid {
+    padding: 0 !important;
+}
+
+/* Additional custom styles can be added here */
