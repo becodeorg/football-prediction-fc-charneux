@@ -12,4 +12,6 @@
     justify-content: space-around;
 }
 
-/* Additional custom styles can be added here */
+.graph-padding-x {
+    padding: 0 3rem;
+}

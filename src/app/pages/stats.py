@@ -10,9 +10,9 @@ ps = PlotService()
 
 layout = html.Div([
     html.H2("Football Statistics"),
-    dcc.Graph(figure=ps.getTopTeamsBarChart()),
-    dcc.Graph(figure=ps.getWinLossDrawChart()),
-    dcc.Graph(figure=ps.getShotsVsGoalsCharts()),
+    dcc.Graph(figure=ps.getTopTeamsBarChart(), className='graph-padding-x'),
+    dcc.Graph(figure=ps.getWinLossDrawChart(), className='graph-padding-x'),
+    dcc.Graph(figure=ps.getShotsVsGoalsCharts(), className='graph-padding-x'),
     html.Div([
         dcc.Graph(figure=ps.getDisciplineChart()),
         dcc.Graph(figure=ps.getTeamPlayingStyleChart()),
