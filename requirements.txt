@@ -6,3 +6,5 @@ beautifulsoup4
 plotly
 dash>=2.0
 dash-bootstrap-components
+requests 
+python-dotenv

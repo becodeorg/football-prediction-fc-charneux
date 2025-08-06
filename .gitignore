@@ -22,3 +22,6 @@ pytest.ini
 
 # Virtual env folder
 venv
+
+# Environment variables
+.env
