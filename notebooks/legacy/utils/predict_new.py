@@ -3,7 +3,7 @@ import joblib
 import pandas as pd
 import numpy as np
 from scipy.special import softmax
-from prepare_X import prepare_X
+from notebooks.legacy.utils.prepare_X import prepare_X
 
 def show_preds(Date: str, HomeTeam: str, AwayTeam: str, using_odds: bool, B365H=None, B365D=None, B365A=None):
     # Load df_X from db
