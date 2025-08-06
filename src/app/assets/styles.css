@@ -5,7 +5,7 @@
     --grass-green: #4a7c59;
     --field-light: #7cb342;
     --jupiler-gold: #d4af37;
-    --jupiler-red: #C8102E;
+    --jupiler-red: #cf152c;
     --white-line: #ffffff;
     --shadow-dark: rgba(0, 0, 0, 0.3);
     --gradient-field: linear-gradient(135deg, #2d5a27 0%, #4a7c59 50%, #7cb342 100%);
@@ -197,6 +197,10 @@ body::before {
 
 .main-content::-webkit-scrollbar-thumb:hover {
     background: #a00d24;
+}
+
+.stats-container {
+    margin-bottom: 3rem;
 }
 
 /* Hide scrollbar for navbar and body */

@@ -19,4 +19,4 @@ layout = html.Div([
         dcc.Graph(figure=ps.getDisciplineChart()),
         dcc.Graph(figure=ps.getTeamPlayingStyleChart()),
     ], className='graph-row'),
-])
+], className='stats-container')

@@ -13,7 +13,7 @@ app.layout = html.Div([
                     html.Div([
                         html.Img(
                             src="/assets/images/jupiler-pro-league.png", 
-                            style={'height': '60px', 'marginRight': '15px'}
+                            style={'height': '60px', 'marginRight': '15px', 'marginLeft': '15px'}
                         ),
                         dbc.NavbarBrand([
                             html.I(className="fas fa-futbol me-2"),
