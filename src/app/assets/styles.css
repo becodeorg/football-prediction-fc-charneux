@@ -5,4 +5,11 @@
     padding: 0 !important;
 }
 
+/* Flex container for displaying graphs in columns */
+.graph-row {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+}
+
 /* Additional custom styles can be added here */
