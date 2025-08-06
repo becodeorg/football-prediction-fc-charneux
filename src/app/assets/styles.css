@@ -5,7 +5,7 @@
     --grass-green: #4a7c59;
     --field-light: #7cb342;
     --jupiler-gold: #d4af37;
-    --jupiler-blue: #003d7a;
+    --jupiler-red: #C8102E;
     --white-line: #ffffff;
     --shadow-dark: rgba(0, 0, 0, 0.3);
     --gradient-field: linear-gradient(135deg, #2d5a27 0%, #4a7c59 50%, #7cb342 100%);
@@ -17,6 +17,7 @@ body {
     font-family: 'Roboto', 'Arial', sans-serif;
     margin: 0;
     padding: 0;
+    overflow: hidden;
 }
 
 /* Remove padding from container-fluid */
@@ -27,10 +28,13 @@ body {
 
 /* Enhanced navbar styling */
 .navbar {
-    background: linear-gradient(90deg, var(--jupiler-blue) 0%, var(--football-green) 100%) !important;
+    background: var(--jupiler-red) !important;
     box-shadow: 0 4px 15px var(--shadow-dark);
-    /* border-bottom: 3px solid var(--jupiler-gold); */
-    padding: 1rem 0;
+    padding: 0.5rem 0;
+    min-height: 70px;
+    display: flex;
+    align-items: center;
+    overflow: hidden;
 }
 
 .navbar-brand {
@@ -47,29 +51,25 @@ body {
     font-size: 1.1rem !important;
     margin: 0 0.5rem;
     padding: 0.5rem 1rem !important;
-    border-radius: 25px;
     transition: all 0.3s ease;
-    border: 2px solid transparent;
 }
 
 .nav-link:hover {
-    background-color: var(--jupiler-gold) !important;
     color: var(--football-green) !important;
-    border-color: var(--white-line);
     transform: translateY(-2px);
-    box-shadow: 0 4px 10px var(--shadow-dark);
 }
 
 /* Main content area */
 .main-content {
     background: linear-gradient(to bottom, rgba(255,255,255,0), rgba(255,255,255,0.7));
-    min-height: 100vh;
+    height: calc(100vh - 70px);
     padding: 2rem 0;
+    overflow-y: auto;
 }
 
-/* Page titles */
+/* Page titles - darker color */
 h2 {
-    color: var(--football-green);
+    color: #1a1a1a;
     font-size: 2.5rem;
     font-weight: bold;
     text-align: center;
@@ -159,7 +159,7 @@ body::before {
     .navbar-brand {
         font-size: 1.4rem !important;
     }
-    
+
     h2 {
         font-size: 2rem;
     }
@@ -181,20 +181,35 @@ body::before {
     animation: fadeInUp 0.6s ease-out;
 }
 
-/* Custom scrollbar */
-::-webkit-scrollbar {
+/* Custom scrollbar - only for main content */
+.main-content::-webkit-scrollbar {
     width: 12px;
 }
 
-::-webkit-scrollbar-track {
-    background: var(--football-green);
+.main-content::-webkit-scrollbar-track {
+    background: #1a1a1a;
 }
 
-::-webkit-scrollbar-thumb {
-    background: var(--jupiler-gold);
+.main-content::-webkit-scrollbar-thumb {
+    background: var(--jupiler-red);
     border-radius: 6px;
 }
 
-::-webkit-scrollbar-thumb:hover {
-    background: #b8941f;
+.main-content::-webkit-scrollbar-thumb:hover {
+    background: #a00d24;
+}
+
+/* Hide scrollbar for navbar and body */
+.navbar {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+.navbar::-webkit-scrollbar {
+    display: none;
+}
+
+/* Hide body scrollbar */
+body::-webkit-scrollbar {
+    display: none;
 }

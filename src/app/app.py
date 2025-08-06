@@ -6,19 +6,24 @@ app = Dash(__name__, use_pages=True, external_stylesheets=[dbc.themes.BOOTSTRAP]
 server = app.server  # for deployment
 
 app.layout = html.Div([
-    # Enhanced Header with Football Theme
     dbc.Navbar([
         dbc.Container([
             dbc.Row([
                 dbc.Col([
-                    dbc.NavbarBrand([
-                        html.I(className="fas fa-futbol me-2"),
-                        "FC Charneux Analytics",
-                        html.Span(" | Jupiler Pro League", style={
-                            'fontSize': '0.8rem',
-                            'fontWeight': 'normal',
-                            'opacity': '0.9'
-                        })
+                    html.Div([
+                        html.Img(
+                            src="/assets/images/jupiler-pro-league.png", 
+                            style={'height': '60px', 'marginRight': '15px'}
+                        ),
+                        dbc.NavbarBrand([
+                            html.I(className="fas fa-futbol me-2"),
+                            "FC Charneux Analytics",
+                            html.Span(" | Jupiler Pro League", style={
+                                'fontSize': '0.8rem',
+                                'fontWeight': 'normal',
+                                'opacity': '0.9'
+                            })
+                        ])
                     ], style={'display': 'flex', 'alignItems': 'center'})
                 ], width="auto"),
                 dbc.Col([
@@ -35,9 +40,9 @@ app.layout = html.Div([
                             html.I(className="fas fa-chart-bar me-1"),
                             dcc.Link("Stats", href="/stats", className="nav-link")
                         ], style={'display': 'flex', 'alignItems': 'center'}),
-                    ], navbar=True, className="ms-auto")
+                    ], navbar=True, className="ms-auto", style={'justifyContent': 'flex-end', 'marginRight': '15px'})
                 ], width=True)
-            ], className="w-100", justify="between")
+            ], className="w-100", justify="between", style={'alignItems': 'center'})
         ], fluid=True)
     ], className="navbar", fixed="top"),
     
@@ -46,7 +51,7 @@ app.layout = html.Div([
         dbc.Container([
             dash.page_container
         ], fluid=True, className="main-content")
-    ], style={'paddingTop': '100px'})
+    ], style={'paddingTop': '76px'})
 ], style={'minHeight': '100vh'})
 
 if __name__ == '__main__':
