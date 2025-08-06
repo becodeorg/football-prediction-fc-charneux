@@ -1,8 +1,109 @@
-/* Custom styles for Football Insights App */
+/* Custom styles for Football Insights App - Jupiler Pro League Theme */
+
+:root {
+    --football-green: #2d5a27;
+    --grass-green: #4a7c59;
+    --field-light: #7cb342;
+    --jupiler-gold: #d4af37;
+    --jupiler-blue: #003d7a;
+    --white-line: #ffffff;
+    --shadow-dark: rgba(0, 0, 0, 0.3);
+    --gradient-field: linear-gradient(135deg, #2d5a27 0%, #4a7c59 50%, #7cb342 100%);
+}
+
+/* Body and main container styling */
+body {
+    background: var(--gradient-field);
+    font-family: 'Roboto', 'Arial', sans-serif;
+    margin: 0;
+    padding: 0;
+}
 
 /* Remove padding from container-fluid */
 .container-fluid {
     padding: 0 !important;
+    background: transparent;
+}
+
+/* Enhanced navbar styling */
+.navbar {
+    background: linear-gradient(90deg, var(--jupiler-blue) 0%, var(--football-green) 100%) !important;
+    box-shadow: 0 4px 15px var(--shadow-dark);
+    /* border-bottom: 3px solid var(--jupiler-gold); */
+    padding: 1rem 0;
+}
+
+.navbar-brand {
+    font-size: 1.8rem !important;
+    font-weight: bold !important;
+    color: var(--white-line) !important;
+    text-shadow: 2px 2px 4px var(--shadow-dark);
+    letter-spacing: 1px;
+}
+
+.nav-link {
+    color: var(--white-line) !important;
+    font-weight: 600 !important;
+    font-size: 1.1rem !important;
+    margin: 0 0.5rem;
+    padding: 0.5rem 1rem !important;
+    border-radius: 25px;
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+}
+
+.nav-link:hover {
+    background-color: var(--jupiler-gold) !important;
+    color: var(--football-green) !important;
+    border-color: var(--white-line);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px var(--shadow-dark);
+}
+
+/* Main content area */
+.main-content {
+    background: linear-gradient(to bottom, rgba(255,255,255,0), rgba(255,255,255,0.7));
+    min-height: 100vh;
+    padding: 2rem 0;
+}
+
+/* Page titles */
+h2 {
+    color: var(--football-green);
+    font-size: 2.5rem;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 2rem;
+    text-shadow: 2px 2px 4px var(--shadow-dark);
+    position: relative;
+}
+
+h2::after {
+    content: '';
+    display: block;
+    width: 100px;
+    height: 4px;
+    background: var(--jupiler-gold);
+    margin: 10px auto;
+    border-radius: 2px;
+}
+
+/* Graph containers */
+.graph-padding-x {
+    padding: 0 3rem;
+    margin-bottom: 2rem;
+}
+
+.graph-padding-x .js-plotly-plot {
+    border-radius: 15px;
+    box-shadow: 0 8px 25px var(--shadow-dark);
+    background: white;
+    transition: transform 0.3s ease;
+}
+
+.graph-padding-x .js-plotly-plot:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 35px var(--shadow-dark);
 }
 
 /* Flex container for displaying graphs in columns */
@@ -10,8 +111,90 @@
     display: flex;
     flex-direction: row;
     justify-content: space-around;
+    gap: 2rem;
+    padding: 0 3rem;
 }
 
-.graph-padding-x {
-    padding: 0 3rem;
+.graph-row .js-plotly-plot {
+    border-radius: 15px;
+    box-shadow: 0 8px 25px var(--shadow-dark);
+    background: white;
+    transition: transform 0.3s ease;
+    flex: 1;
+}
+
+.graph-row .js-plotly-plot:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 35px var(--shadow-dark);
+}
+
+/* Football field pattern overlay */
+body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: 
+        linear-gradient(90deg, transparent 49%, var(--white-line) 49%, var(--white-line) 51%, transparent 51%),
+        linear-gradient(0deg, transparent 49%, var(--white-line) 49%, var(--white-line) 51%, transparent 51%);
+    background-size: 100px 100px;
+    opacity: 0.03;
+    pointer-events: none;
+    z-index: -1;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .graph-row {
+        flex-direction: column;
+        gap: 1rem;
+    }
+    
+    .graph-padding-x {
+        padding: 0 1rem;
+    }
+    
+    .navbar-brand {
+        font-size: 1.4rem !important;
+    }
+    
+    h2 {
+        font-size: 2rem;
+    }
+}
+
+/* Loading animations */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.js-plotly-plot {
+    animation: fadeInUp 0.6s ease-out;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+    width: 12px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--football-green);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--jupiler-gold);
+    border-radius: 6px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #b8941f;
 }
