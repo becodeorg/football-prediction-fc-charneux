@@ -74,7 +74,7 @@ layout = html.Div([
                         html.P("Matches Analyzed", className="stat-label")
                     ], className="stat-item"),
                     html.Div([
-                        html.H4("18", className="stat-number"),
+                        html.H4("16", className="stat-number"),
                         html.P("Teams Tracked", className="stat-label")
                     ], className="stat-item"),
                     html.Div([

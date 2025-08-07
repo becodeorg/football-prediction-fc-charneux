@@ -33,7 +33,7 @@ layout = html.Div([
     html.Hr(style={'margin': '50px 0', 'borderColor': '#ddd', 'borderWidth': '2px'}),
     html.H3("🤖 AI Graph Generator", style={'textAlign': 'center', 'marginBottom': '30px'}),
     html.P("Describe the graph you want to create and our AI will generate it for you!", 
-           style={'textAlign': 'center', 'marginBottom': '30px', 'color': '#666'}),
+           style={'textAlign': 'center', 'marginBottom': '30px', 'color': '#414141'}),
     
     dbc.Row([
         dbc.Col([
@@ -60,7 +60,7 @@ layout = html.Div([
                     dbc.Button(
                         [html.I(className="fas fa-trash me-2"), "Clear All Graphs"],
                         id="clear-graphs-btn",
-                        color="outline-secondary",
+                        style={'backgroundColor': 'transparent', 'borderColor': '#414141'},
                         size="lg",
                         className="w-100"
                     ),
