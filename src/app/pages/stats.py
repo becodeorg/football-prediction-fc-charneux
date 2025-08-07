@@ -1,18 +1,21 @@
 import dash
-from dash import html, dcc, Input, Output, State, callback, no_update
+from dash import html, dcc, Input, Output, State, callback, no_update, clientside_callback, ClientsideFunction
 import dash_bootstrap_components as dbc
 import plotly.express as px
 import pandas as pd
 from services.plot_service import PlotService
 from services.gen_ai_service import GenAIService
+from services.persistence_service import PersistenceService
 import plotly.graph_objects as go
 import sys
 from io import StringIO
+import json
 
 dash.register_page(__name__, path="/stats")
 
 ps = PlotService()
 gen_ai = GenAIService()
+persistence_service = PersistenceService()
 
 layout = html.Div([
     html.Br(),
@@ -75,32 +78,132 @@ layout = html.Div([
             # Container for generated graphs
             html.Div(id="generated-graphs-container", children=[], className="mt-4"),
             
+            # Hidden components for localStorage integration
+            dcc.Store(id="stored-graphs-data", data=[]),
+            html.Div(id="localStorage-trigger", style={'display': 'none'}),
+            html.Div(id="clear-storage-trigger", style={'display': 'none'}),
+            
         ], width=12)
     ], className="px-3"),
     
 ], className='stats-container')
 
+# Clientside callback to load graphs from localStorage on page load
+clientside_callback(
+    """
+    function(n_intervals) {
+        try {
+            var storedData = localStorage.getItem('football_ai_graphs');
+            if (storedData) {
+                return JSON.parse(storedData);
+            }
+        } catch (e) {
+            console.error('Error loading from localStorage:', e);
+        }
+        return [];
+    }
+    """,
+    Output("stored-graphs-data", "data"),
+    Input("generated-graphs-container", "id"),  # Trigger on page load
+    prevent_initial_call=False
+)
+
+# Clientside callback to save graphs to localStorage
+clientside_callback(
+    """
+    function(graphs_data) {
+        if (graphs_data && graphs_data.length > 0) {
+            try {
+                localStorage.setItem('football_ai_graphs', JSON.stringify(graphs_data));
+            } catch (e) {
+                console.error('Error saving to localStorage:', e);
+            }
+        }
+        return "";
+    }
+    """,
+    Output("localStorage-trigger", "children"),
+    Input("stored-graphs-data", "data"),
+    prevent_initial_call=True
+)
+
+# Clientside callback to clear localStorage
+clientside_callback(
+    """
+    function(data) {
+        if (data && data.length === 0) {
+            try {
+                localStorage.removeItem('football_ai_graphs');
+                console.log('localStorage cleared');
+            } catch (e) {
+                console.error('Error clearing localStorage:', e);
+            }
+        }
+        return "";
+    }
+    """,
+    Output("clear-storage-trigger", "children"),
+    Input("stored-graphs-data", "data"),
+    prevent_initial_call=True
+)
+
+# Load stored graphs on page initialization
 @callback(
-    [Output("generated-graphs-container", "children"),
+    Output("generated-graphs-container", "children"),
+    Input("stored-graphs-data", "data"),
+    prevent_initial_call=False
+)
+def load_stored_graphs(stored_graphs_data):
+    """Load and display stored graphs from localStorage on page load."""
+    if not stored_graphs_data:
+        return []
+    
+    try:
+        graphs_components = []
+        for graph_data in reversed(stored_graphs_data):  # Reverse to show newest first
+            graph_component = persistence_service.create_graph_component(graph_data)
+            graphs_components.append(graph_component)
+        
+        if graphs_components:
+            # Add info message about loaded graphs
+            info_alert = dbc.Alert([
+                html.I(className="fas fa-info-circle me-2"),
+                f"Loaded {len(graphs_components)} saved graph(s) from your previous session."
+            ], color="info", dismissable=True, duration=5000, className="mb-3")
+            return [info_alert] + graphs_components
+        
+        return graphs_components
+    except Exception as e:
+        error_alert = dbc.Alert([
+            html.I(className="fas fa-exclamation-triangle me-2"),
+            f"Error loading saved graphs: {str(e)}"
+        ], color="warning", dismissable=True, className="mb-3")
+        return [error_alert]
+
+@callback(
+    [Output("generated-graphs-container", "children", allow_duplicate=True),
      Output("graph-request-input", "value"),
-     Output("loading-placeholder", "children")],
+     Output("loading-placeholder", "children"),
+     Output("stored-graphs-data", "data", allow_duplicate=True)],
     [Input("generate-graph-btn", "n_clicks"),
      Input("clear-graphs-btn", "n_clicks")],
     [State("graph-request-input", "value"),
-     State("generated-graphs-container", "children")],
+     State("generated-graphs-container", "children"),
+     State("stored-graphs-data", "data")],
     prevent_initial_call=True
 )
-def handle_graph_generation(generate_clicks, clear_clicks, user_request, current_graphs):
+def handle_graph_generation(generate_clicks, clear_clicks, user_request, current_graphs, stored_graphs_data):
     ctx = dash.callback_context
     
     if not ctx.triggered:
-        return no_update, no_update, no_update
+        return no_update, no_update, no_update, no_update
     
     button_id = ctx.triggered[0]['prop_id'].split('.')[0]
     
     # Clear all graphs
     if button_id == "clear-graphs-btn" and clear_clicks:
-        return [], "", ""
+        # Clear localStorage by triggering the clientside callback
+        return [], "", "", []
     
     # Generate new graph
     if button_id == "generate-graph-btn" and generate_clicks and user_request:
@@ -123,7 +226,7 @@ def handle_graph_generation(generate_clicks, clear_clicks, user_request, current
                     dismissable=True,
                     className="mb-3"
                 )
-                return [error_alert] + current_graphs, user_request, ""
+                return [error_alert] + current_graphs, user_request, "", stored_graphs_data
             
             # Execute the generated code safely
             fig = execute_graph_code(generated_code, ps.df)
@@ -136,96 +239,38 @@ def handle_graph_generation(generate_clicks, clear_clicks, user_request, current
                     dismissable=True,
                     className="mb-3"
                 )
-                return [error_alert] + current_graphs, user_request, ""
+                return [error_alert] + current_graphs, user_request, "", stored_graphs_data
             
-            # Create unique index based on current timestamp or use a counter
-            # This ensures each graph has a truly unique index
-            import time
-            unique_index = int(time.time() * 1000)  # Use timestamp for unique ID
-            
-            # Calculate graph number - count actual graph components, excluding alerts
+            # Calculate graph number
             current_graph_count = len([item for item in current_graphs 
                                      if isinstance(item, dict) and 
                                      item.get('type') == 'Div' and 
                                      'mb-4' in item.get('props', {}).get('className', '')])
             graph_number = current_graph_count + 1
             
-            new_graph = html.Div([
-                html.Div([
-                    dbc.Row([
-                        dbc.Col([
-                            html.H5([
-                                html.I(className="fas fa-chart-line me-2"),
-                                f"Generated Graph #{graph_number}"
-                            ], className="mb-2"),
-                            html.P(user_request, className="text-muted mb-2", style={'fontStyle': 'italic'}),
-                        ], width=8),
-                        dbc.Col([
-                            dbc.Button([
-                                html.I(className="fas fa-code me-2"),
-                                "View Code"
-                            ],
-                                id={'type': 'code-toggle', 'index': unique_index},
-                                color="outline-info",
-                                size="sm",
-                                className="float-end"
-                            ),
-                        ], width=4, className="d-flex align-items-center justify-content-end")
-                    ], className="mb-3"),
-                    
-                    # Collapsible code section
-                    dbc.Collapse([
-                        dbc.Card([
-                            dbc.CardHeader([
-                                html.I(className="fas fa-terminal me-2"),
-                                "Generated Python Code"
-                            ]),
-                            dbc.CardBody([
-                                html.Pre([
-                                    html.Code(generated_code, style={
-                                        'fontSize': '12px',
-                                        'lineHeight': '1.4',
-                                        'color': '#2d3748'
-                                    })
-                                ], style={
-                                    'backgroundColor': '#f7fafc',
-                                    'border': '1px solid #e2e8f0',
-                                    'borderRadius': '6px',
-                                    'padding': '12px',
-                                    'margin': '0',
-                                    'overflow': 'auto',
-                                    'maxHeight': '300px'
-                                }),
-                                html.Small([
-                                    html.I(className="fas fa-info-circle me-1"),
-                                    "This code was automatically generated by AI based on your request."
-                                ], className="text-muted mt-2 d-block")
-                            ])
-                        ], className="mb-3")
-                    ],
-                        id={'type': 'code-collapse', 'index': unique_index},
-                        is_open=False
-                    ),
-                ]),
-                dcc.Graph(figure=fig, className='graph-padding-x'),
-                html.Hr(style={'margin': '20px 0'})
-            ], className="mb-4", style={
-                'border': '2px solid #e9ecef',
-                'borderRadius': '10px',
-                'padding': '20px',
-                'backgroundColor': '#f8f9fa'
-            })
+            # Create graph data for persistence
+            graph_data = persistence_service.create_graph_data(
+                user_request=user_request,
+                generated_code=generated_code,
+                graph_number=graph_number
+            )
+            
+            # Create the graph component
+            new_graph = persistence_service.create_graph_component(graph_data)
+            
+            # Update stored data
+            updated_stored_data = (stored_graphs_data or []) + [graph_data]
             
             success_alert = dbc.Alert(
                 [html.I(className="fas fa-check-circle me-2"), 
-                 "Graph generated successfully!"],
+                 "Graph generated successfully and saved!"],
                 color="success",
                 dismissable=True,
                 duration=3000,
                 className="mb-3"
             )
             
-            return [success_alert, new_graph] + current_graphs, "", ""
+            return [success_alert, new_graph] + current_graphs, "", "", updated_stored_data
             
         except Exception as e:
             error_alert = dbc.Alert(
@@ -235,9 +280,9 @@ def handle_graph_generation(generate_clicks, clear_clicks, user_request, current
                 dismissable=True,
                 className="mb-3"
             )
-            return [error_alert] + current_graphs, user_request, ""
+            return [error_alert] + current_graphs, user_request, "", stored_graphs_data
     
-    return no_update, no_update, ""
+    return no_update, no_update, no_update, no_update
 
 @callback(
     Output({'type': 'code-collapse', 'index': dash.dependencies.MATCH}, 'is_open'),

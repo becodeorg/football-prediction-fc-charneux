@@ -65,6 +65,7 @@ body {
     height: calc(100vh - 70px);
     padding: 2rem 0;
     overflow-y: auto;
+    overflow-x: hidden;
 }
 
 /* Page titles - darker color */
