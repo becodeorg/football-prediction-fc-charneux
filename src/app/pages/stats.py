@@ -138,11 +138,17 @@ def handle_graph_generation(generate_clicks, clear_clicks, user_request, current
                 )
                 return [error_alert] + current_graphs, user_request, ""
             
-            # Create new graph component with code viewer
-            # Calculate the total number of graphs (excluding alerts) for numbering
-            graph_count = len([item for item in current_graphs if isinstance(item.get('props', {}), dict) and 'children' in item.get('props', {}) and any('dcc.Graph' in str(child) for child in item['props'].get('children', []))])
-            graph_index = graph_count  # Use current count as index for pattern matching
-            graph_number = graph_count + 1  # Display number (newest first)
+            # Create unique index based on current timestamp or use a counter
+            # This ensures each graph has a truly unique index
+            import time
+            unique_index = int(time.time() * 1000)  # Use timestamp for unique ID
+            
+            # Calculate graph number - count actual graph components, excluding alerts
+            current_graph_count = len([item for item in current_graphs 
+                                     if isinstance(item, dict) and 
+                                     item.get('type') == 'Div' and 
+                                     'mb-4' in item.get('props', {}).get('className', '')])
+            graph_number = current_graph_count + 1
             
             new_graph = html.Div([
                 html.Div([
@@ -159,7 +165,7 @@ def handle_graph_generation(generate_clicks, clear_clicks, user_request, current
                                 html.I(className="fas fa-code me-2"),
                                 "View Code"
                             ],
-                                id={'type': 'code-toggle', 'index': graph_index},
+                                id={'type': 'code-toggle', 'index': unique_index},
                                 color="outline-info",
                                 size="sm",
                                 className="float-end"
@@ -197,7 +203,7 @@ def handle_graph_generation(generate_clicks, clear_clicks, user_request, current
                             ])
                         ], className="mb-3")
                     ],
-                        id={'type': 'code-collapse', 'index': graph_index},
+                        id={'type': 'code-collapse', 'index': unique_index},
                         is_open=False
                     ),
                 ]),
